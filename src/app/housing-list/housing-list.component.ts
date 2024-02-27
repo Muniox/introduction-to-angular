@@ -1,26 +1,31 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { HousingLocation } from '../housing-location';
 
 @Component({
   selector: 'app-housing-list',
-  template: `
-    <label for="location-search">Search for new place</label>
-    <input #search id="location-search" placeholder="Ex.Chicago" />
-    <button (click)="searchHousingLocation(search.value)">Search</button>
-
-    <article *ngFor="let location of locationList">
-      <p>{{ location.name }}</p>
-    </article>
-  `,
+  templateUrl: './housing-list.component.html',
   styleUrls: ['./housing-list.component.css'],
 })
 export class HousingListComponent implements OnInit {
   @Input({ required: true }) locationList: HousingLocation[] = [];
+  @Output() selectedLocationEvent = new EventEmitter<HousingLocation>();
+
+  results: HousingLocation[] = [];
 
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log('inicjalizacja komponentu');
+  }
   searchHousingLocation(searchText: string) {
-    console.log(searchText);
+    if (!searchText) return;
+
+    this.results = this.locationList.filter((location) =>
+      location.city.toLowerCase().includes(searchText.toLowerCase()),
+    );
+  }
+
+  selectHousingLocation(location: HousingLocation) {
+    this.selectedLocationEvent.emit(location);
   }
 }
